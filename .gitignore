@@ -1,0 +1,42 @@
+1. PYTHON / DJANGO
+====================
+Entornos virtuales locales (pyenv/venv)
+venv/
+.venv/
+.pyenv/
+.python-version
+
+Archivos generados
+*.pyc
+pycache/
+*.sqlite3
+/backend/db.sqlite3
+/db.sqlite3
+.pytest_cache/
+
+Archivos de la aplicación Django (logs, media de usuario, etc.)
+/media/
+/static_collected/
+.DS_Store
+
+Logs
+*.log
+
+====================
+2. NODE / REACT
+====================
+Dependencias instaladas
+/frontend/node_modules/
+/node_modules/
+
+Archivos de build generados por React
+/frontend/build/
+/frontend/dist/
+.env.local
+
+====================
+3. DOCKER / ENTORNO
+====================
+Variables de entorno sensibles (¡CRUCIAL!)
+.env
+.env.*

@@ -1,0 +1,76 @@
+version: '3.8' # Puedes eliminar esta línea para quitar la advertencia
+
+services:
+  # ----------------------------------------------------
+  # 1. SERVICIO DE BASE DE DATOS (PostgreSQL)
+  # ----------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      # Los valores vienen de .env
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      # Verifica que el usuario y la DB por defecto 'postgres' estén listos
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d postgres"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ----------------------------------------------------
+  # 2. BACKEND (Django API)
+  # ----------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Sincronizar el directorio raíz local con el WORKDIR del contenedor
+      - .:/usr/src/app
+    environment:
+      # Variables de conexión a la DB
+      DB_NAME: ${DB_NAME} # postgres
+      DB_USER: ${DB_USER} # mydjango
+      DB_PASSWORD: ${DB_PASSWORD} # secretpassword
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        while ! pg_isready -h $$DB_HOST -p $$DB_PORT -U $$DB_USER -d postgres; do 
+          echo 'Waiting for PostgreSQL...'
+          sleep 1
+        done && 
+        echo 'PostgreSQL is ready, applying migrations...' && 
+      
+        python /usr/src/app/manage.py makemigrations api && 
+        python /usr/src/app/manage.py migrate --noinput && 
+        python /usr/src/app/manage.py runserver 0.0.0.0:8000
+      "
+
+  # ----------------------------------------------------
+  # 3. FRONTEND (React)
+  # ----------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/app/frontend
+      - /usr/src/app/frontend/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

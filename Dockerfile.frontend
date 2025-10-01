@@ -1,0 +1,17 @@
+# Imagen base para Node.js (usando una versión LTS)
+FROM node:20-alpine
+
+# Establece el directorio de trabajo
+WORKDIR /usr/src/app/frontend
+
+# Copia package.json y package-lock.json para instalar dependencias
+COPY ./frontend/package*.json ./
+
+# Instala dependencias (sin cache)
+RUN npm install --no-cache
+
+# Copia el resto del código fuente
+COPY ./frontend/ .
+
+# El comando para arrancar la aplicación React en modo desarrollo
+CMD ["npm", "start"]

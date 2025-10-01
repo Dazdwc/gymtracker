@@ -1,0 +1,18 @@
+# .dockerignore
+
+# Python
+*.pyc
+__pycache__
+venv/
+.pyenv
+.DS_Store
+
+# Node
+node_modules
+npm-debug.log
+
+# Git
+.git
+
+# Django
+.sqlite3
