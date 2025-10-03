@@ -1,4 +1,4 @@
-version: '3.8' # Puedes eliminar esta línea para quitar la advertencia
+version: '3.8'
 
 services:
   # ----------------------------------------------------
