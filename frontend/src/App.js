@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Login from './features/login/login.jsx';
 import Dashboard from './features/dashboard/dashboad.jsx';
+import PageLayout from './components/pageLayout.jsx';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { theme } from './theme.js';
 
 function App() {
   const [token, setToken] = useState(null);
@@ -24,11 +27,18 @@ function App() {
 
   return (
     <div>
-      {token ? (
-        <Dashboard token={token} onLogout={handleLogout} />
-      ) : (
-        <Login onLoginSuccess={handleLoginSuccess} />
-      )}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {token ? (
+          <PageLayout>
+            <Dashboard token={token} onLogout={handleLogout} />
+          </PageLayout>
+        ) : (
+          <PageLayout>
+            <Login onLoginSuccess={handleLoginSuccess} />
+          </PageLayout>
+        )}
+      </ThemeProvider>
     </div>
   );
 }
