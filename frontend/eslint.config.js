@@ -1,7 +1,7 @@
-import js from "@eslint/js";
-import globals from "globals";
-import pluginReact from "eslint-plugin-react";
-import prettier from "eslint-config-prettier";
+import js from '@eslint/js';
+import globals from 'globals';
+import pluginReact from 'eslint-plugin-react';
+import prettier from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
@@ -22,9 +22,9 @@ export default [
       },
     },
     settings: {
-        react: {
-            version: "detect"
-        }
+      react: {
+        version: 'detect',
+      },
     },
     rules: {
       'react/react-in-jsx-scope': 'off',

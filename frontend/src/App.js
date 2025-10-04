@@ -1,40 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './App.css';
-
-const API_URL = 'http://localhost:8000/api/saludo/';
+import Login from './features/login/login.jsx';
+import Dashboard from './features/dashboard/dashboad.jsx';
 
 function App() {
-  const [mensaje, setMensaje] = useState('Cargando...');
-  const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(API_URL)
-      .then((response) => {
-        setMensaje(response.data.mensaje + ' 🎉');
-      })
-      .catch((err) => {
-        console.error('Error de CORS/Conexion:', err.message);
-        setMensaje('¡ERROR DE CONEXIÓN! ❌');
-        setError(
-          'Revisa si Django está activo (Terminal 1) y si CORS_ALLOWED_ORIGINS en settings.py incluye http://localhost:3000.'
-        );
-      });
+    const storedToken = localStorage.getItem('access_token');
+    if (storedToken) {
+      setToken(storedToken);
+    }
   }, []);
 
+  const handleLoginSuccess = (data) => {
+    localStorage.setItem('access_token', data.access);
+    setToken(data.access);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    setToken(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Backend Check: Django y React</h1>
-        <p
-          className="App-message"
-          style={{ fontSize: '1.5rem', fontWeight: 'bold' }}
-        >
-          {mensaje}
-        </p>
-        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
-      </header>
+    <div>
+      {token ? (
+        <Dashboard token={token} onLogout={handleLogout} />
+      ) : (
+        <Login onLoginSuccess={handleLoginSuccess} />
+      )}
     </div>
   );
 }
